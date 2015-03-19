@@ -3,14 +3,8 @@ from sys import argv
 
 def solve(C, I, P):
     """ solves equal sum for the given list l """
-    #for p in P:
-        #if C-p in P:
-            #return P.index(p)+1, P.index( C-p )+1
     for i, p in enumerate(P):
         if C-p in P[i+1:]:
-            #return P.index(p)+1, 
-            #print ">>", i, p, P[i+1:]
-            #print P.index(p)+1, P[i+1:].index(C-p) + i + 2
             return P.index(p)+1, P[i+1:].index(C-p) + i + 2
     return False 
     
@@ -29,7 +23,6 @@ def main():
             I = int( f.readline() )
             P = map(int, f.readline().split(" ") )
 
-            #print C, I, P
             a,b = solve(C, I, P)
             print "Case #" + str(case_count) + ": " + str(a) + " " + str(b)
     

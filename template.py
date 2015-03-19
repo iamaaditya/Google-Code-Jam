@@ -18,7 +18,7 @@ def main():
         case_count = 0
         for i in xrange(N):
             case_count += 1
-            l = f.readline().rstrip()
+            l = f.readline().rstrip('\n')
             ans = solve(l)
             print "Case #" + str(case_count) + ": " + str(ans)
     
