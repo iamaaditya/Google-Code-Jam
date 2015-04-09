@@ -36,18 +36,18 @@ def solve(K, N, KeysInHand, Chests):
     # run this part of the loop for every number 
     total_sol = []
     for chest_i in cdict:
-        print chest_i
+        # print chest_i
+        pass
 
     KeysInHandCopy = copy(KeysInHand)
     cdictCopy = copy(cdict)
-    global sols
     sols = []
-    findKey(KeysInHandCopy,cdictCopy)
+    findKey(KeysInHandCopy,cdictCopy, sols)
     return sols
 
-sols = []    
-def findKey(KeysInHand, cdict):
-    global sols
+# sols = []    
+def findKey(KeysInHand, cdict, sols):
+    # global sols
     # base case of the recursion
     if len(KeysInHand) == 1 and len(cdict) == 1 and KeysInHand[0] in [chest_keys for chest_keys, _ in cdict.values()]:
         if KeysInHand:
@@ -89,8 +89,8 @@ def findKey(KeysInHand, cdict):
             sols.append(chest_i)
 
             # print "chests remaining to open", cdict, " and keys in hand are ", KeysInHand
-            findKey(KeysInHand,cdict)
-            return str(chest_i) + " " + str(findKey(KeysInHand, cdict))
+            findKey(KeysInHand,cdict, sols)
+            # return str(chest_i) + " " + str(findKey(KeysInHand, cdict))
     # return ''
     # return sols
 
@@ -119,7 +119,7 @@ def main():
                 ans = ' '.join(map(str, ans))
 
             print "Case #" + str(case_count) + ": " + str(ans)
-            break
+            # break
     
 main()
 def demo():
