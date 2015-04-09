@@ -14,9 +14,9 @@ def main():
         filename = argv[1]
 
     with open(filename) as f:
-        N = int( f.readline() )
+        T = int( f.readline() )
         case_count = 0
-        for i in xrange(N):
+        for i in xrange(T):
             case_count += 1
             l = f.readline().rstrip('\n')
             ans = solve(l)
