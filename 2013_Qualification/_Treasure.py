@@ -41,27 +41,27 @@ def solve(K, N, KeysInHand, Chests):
 
     KeysInHandCopy = copy(KeysInHand)
     cdictCopy = copy(cdict)
-    sols = []
-    findKey(KeysInHandCopy,cdictCopy, sols)
+    # sols = []
+    sols = findKey(KeysInHandCopy,cdictCopy)
     return sols
 
 # sols = []    
-def findKey(KeysInHand, cdict, sols):
+def findKey(KeysInHand, cdict):
     # global sols
     # base case of the recursion
     if len(KeysInHand) == 1 and len(cdict) == 1 and KeysInHand[0] in [chest_keys for chest_keys, _ in cdict.values()]:
         if KeysInHand:
             # print "returning from first base case"
             # return str(KeysInHand)
-            sols.append(cdict.keys()[0])
-            return
-            print cdict.keys()
-            pass
+            # sols.append(cdict.keys()[0])
+            return [cdict.keys()[0]]
+            # print cdict.keys()
+            # pass
     
     # there is another base case, where we get stuck in the wrong solution that is KeysInHand do not open any of the existing chest
     if not set(KeysInHand) & set([chest_keys for chest_keys, _ in  cdict.values()]): 
         # print "returning from second base"
-        return ''
+        return []
 
     # now the recursive step
     # only way to make the loop run for every key in hand for every possible combination of the chest it opens is to have double loop
@@ -86,12 +86,12 @@ def findKey(KeysInHand, cdict, sols):
             KeysInHand.remove(key)
             new_keys = cdict.pop(chest_i)[1]
             KeysInHand.extend(new_keys)
-            sols.append(chest_i)
+            # sols.append(chest_i)
 
             # print "chests remaining to open", cdict, " and keys in hand are ", KeysInHand
-            findKey(KeysInHand,cdict, sols)
+            return [chest_i] + findKey(KeysInHand,cdict) 
             # return str(chest_i) + " " + str(findKey(KeysInHand, cdict))
-    # return ''
+    return []
     # return sols
 
 def main():
