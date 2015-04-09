@@ -74,6 +74,7 @@ def solve(K, N, KeysInHand, Chests):
             if len(set(sol)) == len(cdict): valid_sols.append(sol)
             KeysInHandCopy = copy(KeysInHand)
             cdictCopy = copy(cdict)
+    if not len(valid_sols) : return im
     return sorted(valid_sols)[0]
     
 def findKey(KeysInHand, cdict):
@@ -94,6 +95,15 @@ def findKey(KeysInHand, cdict):
         # print "retruning from second base case", KeysInHand, cdict, "Keys:", cdict.keys()
         # return '' # return empty
         # perhaps this is not required
+    if not set(KeysInHand) & set([chest_keys for chest_keys, _ in  cdict.values()]): return ''
+    # for key in KeysInHand:
+    #     if [chest_keys, _ for cdict.values()]
+    #     for chest_i in cdict:
+    #         print key, cdict[chest_i][0]
+    # #         if key in cdict[chest_i][0]: break
+    # # else:
+        # print "in else"
+        # return ''
 
     # now the recursive step
     # only way to make the loop run for every key in hand for every possible combination of the chest it opens is to have double loop
@@ -120,25 +130,37 @@ def main():
         case_count = 0
         for i in xrange(T):
             # K N
+            K, N = map(int, f.readline().rstrip('\n').split(' '))
             # K integers (type of keys you start with 
+            Keys = map(int,  f.readline().rstrip('\n').split(' '))
             # N lines (each one chest)
+            Chests = []
+            for i in xrange(0,N):
+                Chests.append(map(int,  f.readline().rstrip('\n').split(' ')))
                 # Ti Ki (Ti = key needed to open the chest) (Ki = number of keys inside the chest) ....Ki integers... (type of keys contained)
             case_count += 1
-            l = f.readline().rstrip('\n')
-            ans = solve(l)
+            ans = solve(K,N,Keys, Chests)
+            if ans != "IMPOSSIBLE":
+                ans = ' '.join(map(str, ans))
             print "Case #" + str(case_count) + ": " + str(ans)
     
-# main()
+main()
 def demo():
     K = 1 # number of keys you start with
     N = 4 # number of chest needed to be opened
     Keys = [1]
-    # Chests = [[1,0], [1,2,1,3], [2,0], [3,1,2], [1,0]] # more chests than keys
-    # Chests = [[1,0], [1,2,1,3], [2,0], [3,1,1]] # mismatch for the u-key 2, where the number of total keys is not the same as the number of chests required to open using that key
     Chests = [[1,0], [1,2,1,3], [2,0], [3,1,2]]
     print solve(K,N,Keys, Chests)
+    
+    K = 3
+    N = 3
+    Keys = [1,1,1]
+    Chests = [[1,0], [1,0], [1,0]]
+    print solve(K,N,Keys, Chests)
 
-demo()
-
-
+    K = 1
+    N = 1
+    Keys = [2]
+    Chests = [[1,1,1]]
+    print solve(K,N,Keys, Chests)
 
