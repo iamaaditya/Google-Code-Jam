@@ -4,6 +4,7 @@ Created on Thu Apr 03 23:50:56 2014
 
 @author: aaditya prakash
 """
+from __future__ import division
 import re
 #import numpy as np
 from collections import deque
@@ -71,7 +72,7 @@ def PrimeReverse(number):
     while True:
         if number < 2:
             yield 2
-        elif isPrime(number):
+        elif isPrimeFast(number):
             yield number
         number -= 1
 
@@ -80,12 +81,19 @@ def PrimeList(number):
     iterPrime = Prime(2)
     primeList = []
     nextPrime = iterPrime.next()
-    #primeList.append(nextPrime)
-
     while nextPrime < number:
         primeList.append(nextPrime)
         nextPrime = iterPrime.next()
+    return primeList
 
+def PrimeRange(start, end):
+    """ return a list of all the prime number in the range start to end (not inclusive)"""
+    iterPrime = Prime(start)
+    primeList = []
+    nextPrime = iterPrime.next()
+    while nextPrime < end:
+        primeList.append(nextPrime)
+        nextPrime = iterPrime.next()
     return primeList
 
 def NthPrime(number):
@@ -95,21 +103,19 @@ def NthPrime(number):
         nextPrime = iterPrime.next()
     return nextPrime
         
+def IsPalindrome(s):
+    """ Checks if the given string 's' is palindrome """
+    return s==s[::-1]
     
-    
-def isPalindrome(s):
-    """ check if the given string is palindrome """
-    s = str(s)
-    for i in range(len(s)/2+1):
-        #print s[i], s[len(s)-1-i]
-        if s[i] != s[len(s)-1-i]:
-            return False
-    return True
+def IsPalindromeInt(n):
+    """ ABANDONED, as it turns out that covnerting to string and checking palindrome is faster than using modulo. checks if the given integer is palindrome, goes not use string conversion """
+    return IsPalindrome(str(n))
+     
 
 def Palindrome(number):
     """ generator function to generate infinite palindrome larger than given number """
     while True:
-        if isPalindrome(number):
+        if IsPalindrome(number):
             yield number
         number += 1
 
@@ -156,12 +162,12 @@ def PrimeFactorsSet(number):
     returns SET and is not necessarily monotonic"""
     #return set(reduce(list.__add__,
     #            ([i, number] for i in range(1, int(number**0.5) + 1) if number % i == 0 )))
-    return set( i for i in range(1, int(number//2) + 1) if number % i == 0 and isPrime(i))
+    return set( i for i in range(1, int(number//2) + 1) if number % i == 0 and isPrimeFast(i))
 
 def NumberOfPrimeFactors(number):
     lenP = 0
     for i in range(1, int(number//2) + 1):
-        if number % i == 0 and isPrime(i):
+        if number % i == 0 and isPrimeFast(i):
             lenP +=1
     return lenP
 
@@ -187,11 +193,19 @@ def SumDigits_slow(Number):
     """ Returns the sum of the digits of a given number """
     return sum(map(int, str(Number)))
 
+def GetDigits(n):
+    """ returns the digits in a list, uses only integer operations"""
+    d = []
+    while n:
+        d.append(n%10)
+        n //= 10
+    return d[::-1]
+
 def SumDigits(n):
-    """ source StackOverflow """
+    """ returns the sum of the digits, (only integer operation) source StackOverflow """
     r = 0
     while n:
-        r,n = r + n%10, n / 10
+        r,n = r + n%10, n // 10
     return r
 
     
@@ -301,7 +315,7 @@ def IsCircularPrime(num):
     
     for l in llC:
         lNum = int(''.join(l))
-        if(not isPrime(lNum)): return False 
+        if(not isPrimeFast(lNum)): return False 
     return True
     
 def Eratosthenes():
@@ -320,17 +334,13 @@ def Eratosthenes():
 			del D[q]       # no longer need D[q], free memory
 		q += 1
   
-def IsPalindrome(s):
-    """ Checks if the given string 's' is palindrome """
-    sR = s[::-1]
-    return s==sR
     
 def IsTrunctablePrime(num):
     """ Checks if the given PRIME number is Trunctable Prime on both direction """
     for i in range(1,len(str(num))):
-        if(not isPrime(num//(10**i))): return False
+        if(not isPrimeFast(num//(10**i))): return False
     for i in range(1, len(str(num))):
-        if(not isPrime(num % (10**i))): return False
+        if(not isPrimeFast(num % (10**i))): return False
     return True    
     
 def Generate_n_Pandigit_Number(n):
@@ -378,7 +388,7 @@ def IsHexagonal(n):
 
 def totient_function(n):
     """ returns the value of totient function, uses 
-    Euler's formula, and vast prime checking methods"""
+    Euler's formula, and fast prime checking methods"""
 
     if isPrimeFast(n): return n-1
     prime_list = PrimeList(n)
@@ -389,4 +399,52 @@ def totient_function(n):
 
     return total*n
 
+def find_all(a_str, sub):
+    """ finds all the occurence of sub in a_str"""
+    start = 0
+    while True:
+        start = a_str.find(sub, start)
+        if start == -1: return
+        yield start
+        start += len(sub)
+
+def Continued_Fraction_number_generator(n):
+    """ for the sqrt(n), generates the number which goes on the CF formula 1 + 1/ x + ( 1/ x + ....))) """
+    a = n
+    b = 0
+    c = 1
+    while True:
+        alpha = int(math.floor((math.sqrt(a)+b)/c))
+        yield alpha
+        bnew = c*alpha - b
+        cnew = a-bnew**2
+        anew = a
+        if cnew % c == 0:
+            cnew = cnew / c
+        else:
+            anew = a * c
+            bnew = bnew * c
+        a,b,c = anew,bnew,cnew
+
+def frac(b, term, v):
+    return Fraction(b, term + v)
+
+def sqrt_convergent(n):
+    """ generates the convergent for the sqrt(n) """
+    l = Continued_Fraction_number_generator(n)
+    a = l.next()
+    fg = Fraction(1,l.next())
+    while True:
+        newFraction = a + fg
+        yield newFraction.numerator, newFraction.denominator
+        fg = frac(1, fg,l.next()) 
+
+def Pells_Eq_Solution(D):
+    """ returns the smallest solution for the Quadratic Pells Equation for a given D"""
+    ds = sqrt_convergent(D)
+    for i in xrange(200):
+        x,y = ds.next()
+        if x**2 - D*(y**2) == 1:
+            return x,y
+    return 0,0
 
