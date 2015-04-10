@@ -33,62 +33,54 @@ def solve(K, N, KeysInHand, Chests):
         # print ">u_key", u_key, total_keys.count(u_key), key_to_chest[u_key]
         if total_keys.count(u_key) < len(key_to_chest[u_key]): return im
 
-    valid_sols = []
-    KeysInHandCopy = copy(KeysInHand)
-    cdictCopy = copy(cdict)
-    global sols
-    sols = []
-    findKey(KeysInHandCopy,cdictCopy)
+
+    # KeysInHandCopy = copy(KeysInHand)
+    # cdictCopy = copy(cdict)
+    # return findKey(KeysInHandCopy, cdictCopy)
+    # run this part of the loop for every number 
+    print "*"*100, len(cdict)
+    total_sol = []
+    for chest_i in cdict:
+        KeysInHandCopy = copy(KeysInHand)
+        cdictCopy = copy(cdict)
+        chest_i_key = cdictCopy[chest_i][0] 
+        if chest_i_key not in KeysInHandCopy:
+            continue
+        KeysInHandCopy.remove(chest_i_key)
+        _, new_keys = cdictCopy.pop(chest_i)
+        KeysInHandCopy.extend(new_keys)
+        for chest_j in cdictCopy:
+            if chest_j == chest_i : continue
+            chest_j_key = cdictCopy[chest_j][0] 
+            if chest_j_key not in KeysInHandCopy:
+                continue
+            KeysInHandCopy.remove(chest_j_key)
+            _, new_keys = cdictCopy.pop(chest_j)
+            KeysInHandCopy.extend(new_keys)
+            sols = findKey(copy(KeysInHandCopy),copy(cdictCopy))
+            # if chest_i == 9: print chest_i, chest_j , KeysInHandCopy, sols
+            # print chest_i, chest_j , len(sols)
+            if not sols: break
+            total_sol.append(chest_j)
+        # print "*"*100
+    
+    # print total_sol
+    if not sols: return im
     return sols
 
-    # for key in KeysInHandCopy:
-    #     chest = cdictCopy.keys()
-    #     for chest_i in chest:
-    #         if cdictCopy[chest_i][0] != key:
-    #             continue
-    #         # print key
-    #         # print KeysInHandCopy
-    #         if key not in KeysInHand: continue
-    #         KeysInHandCopy.remove(key)
-    #         new_keys = cdictCopy.pop(chest_i)[1]
-    #         KeysInHandCopy.extend(new_keys)
-    #         print "KeysInHandCopy:(inside recursion):", KeysInHandCopy
-    #         sol = []
-    #         sol.append(chest_i)
-    #         ans = 0
-    #         # print "starting with ", KeysInHandCopy, cdictCopy, "ans:", ans, "new_keys", new_keys
-    #         ans = findKey(KeysInHandCopy, cdictCopy).split(' ')[:-1]
-    #         # print "starting with ", KeysInHandCopy, cdictCopy, "ans:", ans, "new_keys", new_keys
-    #         sol.extend(map(int,ans)) 
-    #         # sol = str(chest_i) + " " + str(findKey(KeysInHandCopy, cdictCopy))
-    #         print sol
-    #         if len(set(sol)) == len(cdict): valid_sols.append(sol)
-    #         KeysInHandCopy = copy(KeysInHand)
-    #         cdictCopy = copy(cdict)
-    # if not len(valid_sols) : return im
-    # return sorted(valid_sols)[0]
-sols = []    
+# sols = []    
 def findKey(KeysInHand, cdict):
-    global sols
+    # global sols
     # base case of the recursion
     if len(KeysInHand) == 1 and len(cdict) == 1 and KeysInHand[0] in [chest_keys for chest_keys, _ in cdict.values()]:
-        if KeysInHand:
-            # print "returning from first base case"
-            # return str(KeysInHand)
-            sols.append(cdict.keys()[0])
-            return
-            print cdict.keys()
-            pass
+        return [cdict.keys()[0]]
     
     # there is another base case, where we get stuck in the wrong solution that is KeysInHand do not open any of the existing chest
     if not set(KeysInHand) & set([chest_keys for chest_keys, _ in  cdict.values()]): 
-        # print "returning from second base"
-        return ''
+        return []
 
-    # now the recursive step
-    # only way to make the loop run for every key in hand for every possible combination of the chest it opens is to have double loop
+    # now the recursive step only way to make the loop run for every key in hand for every possible combination of the chest it opens is to have double loop
     for key in KeysInHand:
-        # print "entering loop"
         chest = cdict.keys()
         for chest_i in chest:
             if chest_i in cdict and cdict[chest_i][0] != key: continue
@@ -96,29 +88,17 @@ def findKey(KeysInHand, cdict):
             if chest_i not in cdict: continue
             KeysInHandCopy = copy(KeysInHand)
             cdictCopy = copy(cdict)
-             
             KeysInHandCopy.remove(key)
-            # try:
             new_keys = cdictCopy.pop(chest_i)[1]
-            # except :
-                # pass
             KeysInHandCopy.extend(new_keys)
-            # sols.extend(findKey(KeysInHand,cdict))
-            # before you proceed check if we are going to be stuck in the next chest , 
-            # and if yes then avoid that chest and continue with other chest
+            # before you proceed check if we are going to be stuck in the next chest , and if yes then avoid that chest and continue with other chest
             if not set(KeysInHandCopy) & set([chest_keys for chest_keys, _ in  cdictCopy.values()]): 
-                # print " we will be stuck"
                 continue
             KeysInHand.remove(key)
             new_keys = cdict.pop(chest_i)[1]
             KeysInHand.extend(new_keys)
-            sols.append(chest_i)
-
-            # print "chests remaining to open", cdict, " and keys in hand are ", KeysInHand
-            findKey(KeysInHand,cdict)
-            return str(chest_i) + " " + str(findKey(KeysInHand, cdict))
-    # return ''
-    # return sols
+            return [chest_i] + findKey(KeysInHand,cdict) 
+    return []
 
 def main():
     filename = 'input.in'
@@ -138,32 +118,14 @@ def main():
             for i in xrange(0,N):
                 Chests.append(map(int,  f.readline().rstrip('\n').split(' ')))
                 # Ti Ki (Ti = key needed to open the chest) (Ki = number of keys inside the chest) ....Ki integers... (type of keys contained)
-            # print K, N, Keys, Chests, "*"*30
             case_count += 1
+            if case_count != 18: continue
+            print K, N, Keys, Chests, "*"*30
             ans = solve(K,N,Keys, Chests)
             if ans != "IMPOSSIBLE":
                 ans = ' '.join(map(str, ans))
 
             print "Case #" + str(case_count) + ": " + str(ans)
-            break
+            # break
     
 main()
-def demo():
-    K = 1 # number of keys you start with
-    N = 4 # number of chest needed to be opened
-    Keys = [1]
-    Chests = [[1,0], [1,2,1,3], [2,0], [3,1,2]]
-    print solve(K,N,Keys, Chests)
-    
-    K = 3
-    N = 3
-    Keys = [1,1,1]
-    Chests = [[1,0], [1,0], [1,0]]
-    print solve(K,N,Keys, Chests)
-
-    K = 1
-    N = 1
-    Keys = [2]
-    Chests = [[1,1,1]]
-    print solve(K,N,Keys, Chests)
-
