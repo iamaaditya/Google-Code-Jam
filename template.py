@@ -3,7 +3,6 @@ from itertools import combinations
 from sys import argv
 
 def solve(l):
-    """ solves equal sum for the given list l """
 
     return False 
     
