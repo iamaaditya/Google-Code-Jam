@@ -48,6 +48,7 @@ def reduce(s):
         return quv[0], quv[1]
 
     base, sign = reduce(s[1:])
+    # print base, sign
     red_sols[s[1:]] = (base,sign)
     result = qt[(s[0], base)]
     newbase = result[0]
@@ -56,7 +57,7 @@ def reduce(s):
     return newbase, newsign
 
 def simplify(w):
-    for i in xrange(5):
+    for i in xrange(3):
         w = w.replace('ij', 'k')
         w = w.replace('ki', 'j')
         w = w.replace('jk', 'i')
@@ -72,8 +73,51 @@ def simplify(w):
     return w
 # def solve(s):
     # print s
-
 def solve(s):
+    global red_sols
+    global qt
+    no = 'NO'
+    yes = 'YES'
+    sim_dic = {}
+    i = 'i'
+    j = 'j'
+    k = 'k'
+    a = '1'
+    if len(s) < 3:
+        return no
+    if len(s) == 3:
+        if s == 'ijk': return yes
+        return no
+
+    ct = (s[0], 1)
+    all_i_indexes = []
+    for i_index in xrange(1,len(s)-2):
+        if ct[0] == i and ct[1] == 1:
+            all_i_indexes.append(i_index-1)
+        combine_c = qt[ct[0], s[i_index]]
+        ct =(combine_c[0], ct[1]*combine_c[1])
+    # print all_i_indexes
+
+    print reduce('ji')
+    et = (s[-1], 1)
+    all_k_indexes = []
+    for k_index in xrange(len(s)-2,1, -1):
+        # print k_index, s[k_index], len(s)
+        if et[0] == k and et[1] == 1:
+            all_k_indexes.append(k_index+1)
+        # combine_e = qt[et[0], s[k_index]]
+        combine_e = qt[s[k_index],et[0]]
+        # print s[k_index], k_index, et, combine_e[0], combine_e[1]*et[1]
+        et =(combine_e[0], et[1]*combine_e[1])
+
+
+    print all_i_indexes, all_k_indexes
+    # ai = all_i_indexes[0]
+    # ak = all_k_indexes[0]
+    # print s[ai+1: ak-1]
+    # print ai, ak
+
+def solve_vs(s):
     global red_sols
     global qt
     no = 'NO'
@@ -99,45 +143,59 @@ def solve(s):
         c = s[i_index]
         if i_index == 0:
             ct = (c, 1)
-            continue
-        if not (ct[0] == i and ct[1] == 1): 
-            combine = qt[ct[0], c]
-            ct =(combine[0], ct[1]*combine[1])
-        else:
+            # continue
+        # if not (ct[0] == i and ct[1] == 1): 
+            # combine = qt[ct[0], c]
+            # ct =(combine[0], ct[1]*combine[1])
             # print ct
+        if ct[0] == i and ct[1] == 1: 
+            dt = (0,0)
             for j_index in xrange(i_index+1, len(s)- 1):
+                # print i_index, j_index
                 d = s[j_index]
+
                 if j_index == i_index+1:
                     dt = (d,1)
-                    continue
-                if not (dt[0] == j and dt[1] == 1):
-                    combine = qt[dt[0], d]
-                    dt = (combine[0], dt[1]*combine[1])
-                else:
-                    # print ct, dt, i_index, j_index
+                    # continue
+                # if not (dt[0] == j and dt[1] == 1):
+                #     combine = qt[dt[0], d]
+                #     dt = (combine[0], dt[1]*combine[1])
+                # else:
+                # print ct, dt, i_index, j_index
+                # print d, dt
+                if dt[0] == j and dt[1] == 1:
+                    # print s[:i_index+1], "*", s[i_index+1:j_index], "*", s[j_index:]
                     sim_str = s[j_index+1:]
-                    rem = ''
-                    if sim_str in sim_dic:
-                        rem =  sim_dic[sim_str]
-                    else:
+                    # rem = ''
+                    # if sim_str in sim_dic:
+                        # rem =  sim_dic[sim_str]
+                    # else:
                         # rem = simplify(sim_str)
-                        rem = sim_str
-                        sim_dic[sim_str] = rem
+                        # rem = sim_str
+                        # sim_dic[sim_str] = rem
                     # if rem == 'kj' or rem =='jj' or rem == 'j' : continue
+                    rem = sim_str
                     rep_list.add(simplify(rem))
                     if old_rem == len(rep_list): rep_count += 1
                     old_rem = len(rep_list)
-                    # print rep_count
-                    if rep_count > 10000: return no
+                    # if rep_count > 90000: 
+                        # print "HIT ***************************************"
+                        # return no
+                    rem = simplify(rem)
                     if rem:
                         et = reduce(rem)
-                        # if old_rem == et: rep_count += 1
-                        # old_rem = et
-                        # print rep_count
-                        # print et
+                        # print rem, et
                         if et[0] == k and et[1] == 1:
                             return yes
 
+                if j_index == i_index+1:
+                    continue
+                combine_d = qt[dt[0], d]
+                dt = (combine_d[0], dt[1]*combine_d[1])
+                # print "dt after", dt
+        if i_index == 0: continue
+        combine_c = qt[ct[0], c]
+        ct =(combine_c[0], ct[1]*combine_c[1])
     return no
 
 
@@ -213,7 +271,7 @@ def s11olve_ols(s):
     
 
 def main():
-    filename = '1input.in'
+    filename = 'input.in'
     if len(argv) > 1:
         filename = argv[1]
 
@@ -225,6 +283,7 @@ def main():
             L, X = f.readline().rstrip('\n').split(' ')
             st = f.readline().rstrip('\n')
             # print L, X, st[:5]
+            if case_count == 5 : continue
             ans = solve(st*int(X))
             
             print "Case #" + str(case_count) + ": " + str(ans)
