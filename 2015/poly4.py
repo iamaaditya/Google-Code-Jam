@@ -7,12 +7,12 @@ config_dict = {}
 
 config_dict[(4,4)] = [1,0,1]
 config_dict[(4,3)] = [1,1,1]
-config_dict[(4,2)] = [1,0,1]
-config_dict[(4,1)] = [1,0,1]
+config_dict[(4,2)] = [0,0,1]
+config_dict[(4,1)] = [0,0,1]
 config_dict[(3,3)] = [0,1,0]
 config_dict[(3,2)] = [0,1,1]
-config_dict[(3,1)] = [0,1,0]
-config_dict[(2,2)] = [1,0,1]
+config_dict[(3,1)] = [0,0,0]
+config_dict[(2,2)] = [0,0,1]
 config_dict[(2,1)] = [0,0,1]
 config_dict[(1,1)] = [0,0,0]
 
@@ -23,14 +23,15 @@ def solve(X, R, C):
 
     if X == 1: return yes
     if max(R,C) < X: return no
-    if min(R,C) < int(floor(X/2)): return no
+    # if min(R,C) < int(floor(X/2)): return no
     if config_dict[max(R,C), min(R,C)][4-X]: return yes
 
     return no 
     
 
 def main():
-    filename = 'input.in'
+    # filename = 'input.in'
+    filename = 'dsmall.in'
     if len(argv) > 1:
         filename = argv[1]
 
@@ -41,25 +42,11 @@ def main():
             case_count += 1
             l = f.readline().rstrip('\n')
             X, R, C = map(int, l.split(' '))
-            # print X, R, C,
+            print X, R, C,
             ans = solve(X, R, C)
             print "Case #" + str(case_count) + ": " + str(ans)
     
 main()
 
-def demo():
-    global config_dict
-    with open('nomino.txt') as fi:
-        i = 0
-        for line in fi:
-            i += 1
-            l = line.strip()
-            configs = l.split('&')
-            config_dict[i] = configs
-            # for config in configs:
-                # blocks = config.split('|') 
-                # print blocks
-# demo()
-# print config_dict
 
 
