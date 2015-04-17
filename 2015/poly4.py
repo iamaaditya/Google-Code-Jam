@@ -23,15 +23,11 @@ def solve(X, R, C):
 
     if X == 1: return yes
     if max(R,C) < X: return no
-    # if min(R,C) < int(floor(X/2)): return no
     if config_dict[max(R,C), min(R,C)][4-X]: return yes
-
     return no 
-    
 
 def main():
-    # filename = 'input.in'
-    filename = 'dsmall.in'
+    filename = 'input.in'
     if len(argv) > 1:
         filename = argv[1]
 
@@ -42,7 +38,7 @@ def main():
             case_count += 1
             l = f.readline().rstrip('\n')
             X, R, C = map(int, l.split(' '))
-            print X, R, C,
+            # print X, R, C,
             ans = solve(X, R, C)
             print "Case #" + str(case_count) + ": " + str(ans)
     
